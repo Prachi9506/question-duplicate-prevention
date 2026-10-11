@@ -1,0 +1,127 @@
+{
+ "assignment": {
+  "correct": 10,
+  "total": 10
+ },
+ "stress": {
+  "baselines": {
+   "difflib": {
+    "f1": 0.6842105263157895,
+    "thr": 0.6178861788617886,
+    "p": 0.5306122448979592,
+    "r": 0.9629629629629629,
+    "distinct_above_weakest_dup": 25,
+    "n_distinct": 26
+   },
+   "tfidf": {
+    "f1": 0.7105263157894737,
+    "thr": 0.22923228983297875,
+    "p": 0.5510204081632653,
+    "r": 1.0,
+    "distinct_above_weakest_dup": 22,
+    "n_distinct": 26
+   },
+   "content": {
+    "f1": 0.8387096774193549,
+    "thr": 0.6531392105035432,
+    "p": 0.7428571428571429,
+    "r": 0.9629629629629629,
+    "distinct_above_weakest_dup": 15,
+    "n_distinct": 26
+   }
+  },
+  "cascade_strict": [
+   0.9615384615384615,
+   1.0,
+   0.9259259259259259
+  ],
+  "cascade_lenient": [
+   0.9811320754716981,
+   1.0,
+   0.9629629629629629
+  ],
+  "three_way": 0.9655172413793104,
+  "misses": [
+   [
+    "Give two examples of renewable energy.",
+    "Mention two examples of renewable energy sources.",
+    "DUP",
+    "REVIEW"
+   ],
+   [
+    "What is the capital of France?",
+    "What is France's capital city?",
+    "DUP",
+    "DISTINCT"
+   ]
+  ]
+ },
+ "metamorphic": {
+  "format-noise": {
+   "ok": 1152,
+   "total": 1152
+  },
+  "paraphrase": {
+   "ok": 672,
+   "total": 672
+  },
+  "intent-shift": {
+   "ok": 768,
+   "total": 768
+  },
+  "concept-shift": {
+   "ok": 400,
+   "total": 400
+  }
+ },
+ "scale": [
+  {
+   "N": 1000,
+   "cells": 1000,
+   "build_s": 0.22,
+   "p50_ms": 1.92,
+   "p95_ms": 2.95,
+   "avg_candidates": 25,
+   "recall": 1.0,
+   "false_positive": 0.0,
+   "guided_prompt_tokens": 899,
+   "naive_prompt_tokens": 9550
+  },
+  {
+   "N": 5000,
+   "cells": 5000,
+   "build_s": 1.22,
+   "p50_ms": 2.38,
+   "p95_ms": 3.48,
+   "avg_candidates": 25,
+   "recall": 1.0,
+   "false_positive": 0.0,
+   "guided_prompt_tokens": 898,
+   "naive_prompt_tokens": 47703
+  },
+  {
+   "N": 20000,
+   "cells": 20000,
+   "build_s": 5.47,
+   "p50_ms": 3.07,
+   "p95_ms": 5.13,
+   "avg_candidates": 29.1,
+   "recall": 1.0,
+   "false_positive": 0.0,
+   "guided_prompt_tokens": 894,
+   "naive_prompt_tokens": 190500
+  },
+  {
+   "N": 50000,
+   "cells": 50000,
+   "build_s": 11.29,
+   "p50_ms": 5.35,
+   "p95_ms": 7.6,
+   "avg_candidates": 42.8,
+   "recall": 1.0,
+   "false_positive": 0.0,
+   "guided_prompt_tokens": 892,
+   "naive_prompt_tokens": 477448
+  }
+ ]
+}
