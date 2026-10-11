@@ -1,0 +1,38 @@
+
+== 1. Assignment corpus (sequential insertion) : 10/10 correct
+   ok  Q1   expected=ORIGINAL            got=ORIGINAL            What is reflection of light?
+   ok  Q2   expected=SEMANTIC_DUPLICATE  got=SEMANTIC_DUPLICATE  Define the reflection of light.
+   ok  Q3   expected=SEMANTIC_DUPLICATE  got=SEMANTIC_DUPLICATE  What do you understand by the reflection of light?
+   ok  Q4   expected=SEMANTIC_DUPLICATE  got=SEMANTIC_DUPLICATE  Explain the meaning of light reflection.
+   ok  Q5   expected=DISTINCT            got=DISTINCT            State the laws of reflection of light.
+   ok  Q6   expected=DISTINCT            got=DISTINCT            What is the angle of reflection?
+   ok  Q7   expected=DISTINCT            got=DISTINCT            The angle of incidence is 30°. What is the angle of reflection?
+   ok  Q8   expected=REVIEW              got=REVIEW              What is reflection?
+   ok  Q9   expected=DISTINCT            got=DISTINCT            What is the difference between regular and diffuse reflection?
+   ok  Q10  expected=EXACT_DUPLICATE     got=EXACT_DUPLICATE     Define the reflection of light.
+
+== 2/3. Stress set (58 hand-labelled pairs; DUP / DISTINCT / REVIEW)
+   Baselines, each with its ORACLE-best threshold (a generous, unrealistic advantage):
+     difflib  F1=0.68 (thr 0.62, P=0.53, R=0.96); 25/26 genuinely-different pairs score >= the weakest true duplicate
+     tfidf    F1=0.71 (thr 0.23, P=0.55, R=1.00); 22/26 genuinely-different pairs score >= the weakest true duplicate
+     content  F1=0.84 (thr 0.65, P=0.74, R=0.96); 15/26 genuinely-different pairs score >= the weakest true duplicate
+   Cascade (no tuning to this set): strict F1=0.96 (P=1.00, R=0.93); lenient[REVIEW counts as flagged] F1=0.98 (P=1.00, R=0.96); 3-way accuracy=97%
+   by category: {'format': '5/5', 'paraphrase': '20/20', 'hard': '0/2', 'hard-negative': '26/26', 'ambiguous': '5/5'}
+   Misses (2) - shown, not hidden:
+     [hard] expected DUP, got REVIEW:  'Give two examples of renewable energy.'  ~  'Mention two examples of renewable energy sources.'
+     [hard] expected DUP, got DISTINCT:  'What is the capital of France?'  ~  "What is France's capital city?"
+
+== 4. Metamorphic suite (invariances; tests internal consistency, not external validity)
+     format-noise   1152/1152  (100.0%)
+     paraphrase     672/672  (100.0%)
+     intent-shift   768/768  (100.0%)
+     concept-shift  400/400  (100.0%)
+
+== 5. Scale benchmark (pure Python, single thread, this sandbox)
+   N       cells   build   p50ms  p95ms  cand  recall  FPR    prompt(guided)  prompt(naive dump)
+   1000    1000    0.22  s 1.92   2.95   25    1.00   0.00   899             9550
+   5000    5000    1.22  s 2.38   3.48   25    1.00   0.00   898             47703
+   20000   20000   5.47  s 3.07   5.13   29.1  1.00   0.00   894             190500
+   50000   50000   11.29 s 5.35   7.6    42.8  1.00   0.00   892             477448
+
+   figure written; pairwise agreement on assignment corpus = 100%

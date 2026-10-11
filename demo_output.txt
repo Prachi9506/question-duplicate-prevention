@@ -1,0 +1,146 @@
+
+==============================================================================================
+PART 1 - INDEPENDENT DETECTION: each question vs. everything before it (assignment protocol)
+==============================================================================================
+Q1  What is reflection of light?                                       -> ORIGINAL           [OK]
+Q2  Define the reflection of light.                                    -> SEMANTIC_DUPLICATE [OK]
+Q3  What do you understand by the reflection of light?                 -> SEMANTIC_DUPLICATE [OK]
+Q4  Explain the meaning of light reflection.                           -> SEMANTIC_DUPLICATE [OK]
+Q5  State the laws of reflection of light.                             -> DISTINCT           [OK]
+Q6  What is the angle of reflection?                                   -> DISTINCT           [OK]
+Q7  The angle of incidence is 30°. What is the angle of reflection?    -> DISTINCT           [OK]
+Q8  What is reflection?                                                -> REVIEW             [OK]
+Q9  What is the difference between regular and diffuse reflection?     -> DISTINCT           [OK]
+Q10 Define the reflection of light.                                    -> EXACT_DUPLICATE    [OK]
+
+==============================================================================================
+PART 1b - WHY it decides that way (evidence trail; each probed against only the questions that precede it)
+==============================================================================================
+Q4: 'Explain the meaning of light reflection.'   <- paraphrase in different template wording -> caught
+   SEMANTIC_DUPLICATE  (confidence 0.95)   frame=DEFINE|light reflection
+     vs Q1: 'What is reflection of light?' -> SEMANTIC_DUPLICATE (0.95) sim=0.92
+          [exact  ] no        texts differ after canonicalisation
+          [frame  ] DUP       same ask (DEFINE) about the same concept 'light reflection'
+          [lexical] DUP       content cosine 0.92
+     vs Q2: 'Define the reflection of light.' -> SEMANTIC_DUPLICATE (0.95) sim=0.92
+          [exact  ] no        texts differ after canonicalisation
+          [frame  ] DUP       same ask (DEFINE) about the same concept 'light reflection'
+          [lexical] DUP       content cosine 0.92
+
+Q5: 'State the laws of reflection of light.'   <- shares 4 of 5 content words with Q1 -> correctly NOT a duplicate
+   DISTINCT  (confidence 0.95)   frame=ENUMERATE|light reflection law
+     vs Q1: 'What is reflection of light?' -> DISTINCT (0.95) sim=0.83
+          [exact  ] no        texts differ after canonicalisation
+          [frame  ] DISTINCT  different ask: ENUMERATE vs DEFINE
+          [lexical] REVIEW    content cosine 0.83
+     vs Q2: 'Define the reflection of light.' -> DISTINCT (0.95) sim=0.83
+          [exact  ] no        texts differ after canonicalisation
+          [frame  ] DISTINCT  different ask: ENUMERATE vs DEFINE
+          [lexical] REVIEW    content cosine 0.83
+
+Q8: 'What is reflection?'   <- subsumption -> escalated to a human, with the exact reason
+   REVIEW  (confidence 0.60)   frame=DEFINE|reflection
+     vs Q1: 'What is reflection of light?' -> REVIEW (0.60) sim=0.71
+          [exact  ] no        texts differ after canonicalisation
+          [frame  ] REVIEW    same ask, but candidate is broader: concept differs only by ['light']
+          [lexical] REVIEW    content cosine 0.71
+     vs Q2: 'Define the reflection of light.' -> REVIEW (0.60) sim=0.71
+          [exact  ] no        texts differ after canonicalisation
+          [frame  ] REVIEW    same ask, but candidate is broader: concept differs only by ['light']
+          [lexical] REVIEW    content cosine 0.71
+
+
+==============================================================================================
+PART 1c - robustness: formats, spelled-out numbers, compound questions
+==============================================================================================
+'  Q7)  DEFINE   the Reflection of Light??  [2 marks]'
+    -> EXACT_DUPLICATE (conf 1.00)  closest: Q2  
+'Find the angle of reflection if the angle of incidence is thirty degrees.'
+    -> SEMANTIC_DUPLICATE (conf 0.95)  closest: Q7  
+'The angle of incidence is 45°. What is the angle of reflection?'
+    -> DISTINCT (conf 0.95)  closest: Q6  
+'What is reflection of light and why does it occur?'
+    -> REVIEW (conf 0.60)  closest: Q1  
+
+==============================================================================================
+PART 2 - GENERATION-TIME PREVENTION: the coverage map replaces 'paste the whole corpus'
+==============================================================================================
+10 questions collapse into 6 cells (kind-of-ask x concept):
+   [DEFINE       ] reflection of light          x5   ['Q1', 'Q2', 'Q3', 'Q4', 'Q10']
+   [ENUMERATE    ] laws of reflection of light  x1   ['Q5']
+   [DEFINE       ] angle of reflection          x1   ['Q6']
+   [COMPUTE      ] angle of reflection          x1   ['Q7']
+   [DEFINE       ] reflection                   x1   ['Q8']
+   [DIFFERENTIATE] regular diffuse reflection   x1   ['Q9']
+
+The prompt the LLM actually receives (516 est. tokens, budget 900):
+----------------------------------------------------------------------------------------------
+You are writing NEW exam questions for the subject: reflection of light.
+Write exactly 8 questions. Each must fill ONE of the TARGET CELLS below.
+A cell = (kind of ask) x (concept). Two questions in the same cell are duplicates even when worded differently, so NEVER write into a COVERED cell, and never re-phrase an existing question.
+
+TARGET CELLS (open - nothing exists yet):
+ 1. [WHY] laws of reflection of light - asks for a reason or cause
+ 2. [HOW] regular reflection - asks how a process or mechanism works
+ 3. [EXAMPLE] diffuse reflection - asks for real-life examples
+ 4. [ENUMERATE] plane mirror - asks to list or state several items (laws, types, properties...)
+ 5. [DEFINE] angle of incidence - asks for a definition / meaning
+ 6. [WHY] periscope - asks for a reason or cause
+ 7. [HOW] lateral inversion - asks how a process or mechanism works
+ 8. [EXAMPLE] angle of reflection - asks for real-life examples
+ 9. [WHY] reflection of light - asks for a reason or cause
+ 10. [HOW] laws of reflection of light - asks how a process or mechanism works
+ 11. [EXAMPLE] regular reflection - asks for real-life examples
+ 12. [ENUMERATE] diffuse reflection - asks to list or state several items (laws, types, properties...)
+
+COVERED CELLS (do NOT write here):
+ - [DEFINE] reflection of light (x5) e.g. "What is reflection of light?"
+ - [DEFINE] reflection (x1) e.g. "What is reflection?"
+ - [ENUMERATE] laws of reflection of light (x1) e.g. "State the laws of reflection of light."
+ - [DEFINE] angle of reflection (x1) e.g. "What is the angle of reflection?"
+ - [DIFFERENTIATE] regular diffuse reflection (x1) e.g. "What is the difference between regular and diffuse reflection?"
+ - [COMPUTE] angle of reflection (x1) e.g. "The angle of incidence is 30°. What is the angle of reflection?"
+
+STYLE EXAMPLES (tone/format only - do not reuse their topic or wording):
+ - What is reflection of light?
+ - Define the reflection of light.
+ - What do you understand by the reflection of light?
+
+Return ONLY a JSON array, no prose: [{"cell": <number>, "question": "..."}]
+
+
+==============================================================================================
+PART 3 - THE FULL LOOP (simulated LLM): prevention + independent safety net + feedback
+==============================================================================================
+
+>> PLAIN prompt  (no coverage map; LLM gravitates to obvious questions)
+   3 accepted, 0 held for review, 20 rejected of 23 candidates over 4 round(s) / 4 LLM call(s); first-pass acceptance 38%; prompt tokens per round: [516, 695, 743, 742]
+     + Q11 List the main properties of reflection of light.
+     + Q12 List the characteristics of reflection of light.
+     + Q13 Why does reflection of light matter in everyday life?
+     x 'What is reflection of light?'                               EXACT_DUPLICATE of Q1
+     x 'Explain the meaning of reflection of light.'                SEMANTIC_DUPLICATE of Q1
+     x 'List the characteristics of reflection of light.'           EXACT_DUPLICATE of Q12
+     x 'Define reflection of light.'                                SEMANTIC_DUPLICATE of Q1
+     x ... and 16 more rejected
+
+>> GUIDED prompt (leaky: still ignores the avoid-list 30% / copies examples 15%)
+   7 accepted, 0 held for review, 5 rejected of 12 candidates over 4 round(s) / 4 LLM call(s); first-pass acceptance 75%; prompt tokens per round: [516, 632, 673, 714]
+     + Q11 Why is laws of reflection of light important?
+     + Q12 How is regular reflection observed in daily life?
+     + Q13 Give two examples of diffuse reflection from daily life.
+     + Q14 List the characteristics of plane mirror.
+     + Q15 Define angle of incidence.
+     + Q16 Why does periscope matter in everyday life?
+     + Q17 How does regular reflection work?
+     x 'Differentiate between regular diffuse reflection.'          SEMANTIC_DUPLICATE of Q9
+     x 'What is the difference between regular diffuse reflection?' SEMANTIC_DUPLICATE of Q9
+     x 'Why is laws of reflection of light important?'              EXACT_DUPLICATE of Q11
+     x 'Why does laws of reflection of light matter in everyday life?' SEMANTIC_DUPLICATE of Q11
+     x ... and 1 more rejected
+
+   Independent audit of the final 17-question store -> duplicate clusters: [['Q1', 'Q2', 'Q3', 'Q4', 'Q10']]
+   (only the original Q1/Q2/Q3/Q4/Q10 cluster from the assignment data remains; nothing generated got in)
+
+NOTE: MockLLM is a behavioural simulation. It demonstrates the pipeline and the safety net; it is NOT evidence of how
+often a real LLM repeats itself. See README 'How I would evaluate this for real'.
